@@ -104,16 +104,16 @@ export async function GET(request: NextRequest) {
       charts: {
         packageSize: Object.entries(packageStats).map(([size, data]) => ({
           name: size,
-          value: data.revenue,
-          quantity: data.quantity,
-          orders: data.orders,
+          value: (data as { quantity: number; revenue: number; orders: number }).revenue,
+          quantity: (data as { quantity: number; revenue: number; orders: number }).quantity,
+          orders: (data as { quantity: number; revenue: number; orders: number }).orders,
           color: size === '1kg' ? '#F59E0B' : '#D97706',
           icon: '📦'
         })),
         status: Object.entries(statusStats).map(([status, data]) => ({
           name: status,
-          value: data.count,
-          revenue: data.revenue,
+          value: (data as { count: number; revenue: number }).count,
+          revenue: (data as { count: number; revenue: number }).revenue,
           color: getStatusColor(status),
           icon: getStatusIcon(status)
         }))
