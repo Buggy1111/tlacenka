@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-900 text-white antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  /* Liquid glass card */
+  .glass-card {
+    @apply relative rounded-3xl p-6 md:p-8;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(198, 161, 91, 0.15);
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 20px 60px rgba(198, 161, 91, 0.25);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Premium button */
+  .btn-premium {
+    @apply relative overflow-hidden px-8 py-4 rounded-2xl;
+    @apply bg-gradient-to-r from-amber-600 to-yellow-400;
+    @apply text-slate-900 font-semibold;
+    box-shadow: 0 10px 40px rgba(198, 161, 91, 0.3);
+    @apply transition-all duration-200 ease-out;
+    @apply hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-premium:hover {
+    box-shadow: 0 20px 60px rgba(198, 161, 91, 0.5);
+  }
+
+  /* Stepper button */
+  .stepper-btn {
+    @apply h-14 w-14 rounded-xl text-2xl;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    @apply text-white/90 hover:text-white;
+    @apply transition-all duration-150 ease-out;
+    @apply active:scale-95;
+  }
+
+  .stepper-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Input field */
+  .input-premium {
+    @apply w-full px-5 py-4 rounded-2xl text-white placeholder-white/40;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    @apply focus:outline-none transition-all duration-200;
+  }
+
+  .input-premium:focus {
+    border-color: rgba(198, 161, 91, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Status pills */
+  .status-pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    backdrop-filter: blur(20px);
+    @apply border;
+  }
+
+  .status-new {
+    @apply bg-blue-500/10 border-blue-500/30 text-blue-300;
+  }
+
+  .status-confirmed {
+    @apply bg-green-500/10 border-green-500/30 text-green-300;
+  }
+
+  .status-done {
+    background: rgba(198, 161, 91, 0.1);
+    border-color: rgba(198, 161, 91, 0.3);
+    @apply text-yellow-300;
+  }
+
+  .status-canceled {
+    @apply bg-red-500/10 border-red-500/30 text-red-300;
+  }
+
+  /* Glass input for forms */
+  .glass-input {
+    @apply w-full px-4 py-3 rounded-xl text-white placeholder-white/40;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    @apply focus:outline-none transition-all duration-200;
+  }
+
+  .glass-input:focus {
+    border-color: rgba(198, 161, 91, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Glass button */
+  .glass-button {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    @apply text-white/90 hover:text-white;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-white/10 hover:border-white/20;
+  }
+
+  /* Glass select dropdown */
+  select.glass-input {
+    @apply appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  /* Styles for select dropdown options */
+  select.glass-input option {
+    background-color: #1e293b !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 12px !important;
+  }
+
+  select.glass-input option:hover {
+    background-color: #334155 !important;
+  }
+
+  select.glass-input option:checked,
+  select.glass-input option:selected {
+    background-color: #d97706 !important;
+    color: #0f172a !important;
+  }
+
+  /* Firefox specific fix */
+  @-moz-document url-prefix() {
+    select.glass-input option {
+      background: #1e293b;
+      color: white;
+    }
+
+    select.glass-input option:hover {
+      background: #334155;
+    }
+  }
+
+  /* Safe area styles for mobile */
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-left { padding-left: env(safe-area-inset-left); }
+  .safe-right { padding-right: env(safe-area-inset-right); }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 375px) {
+    /* iPhone SE, 8 and smaller */
+    .glass-card {
+      @apply p-4 rounded-2xl;
+    }
+
+    .btn-premium {
+      @apply px-6 py-3 text-base;
+    }
+
+    .input-premium {
+      @apply px-4 py-3 text-sm;
+    }
+
+    .stepper-btn {
+      @apply h-12 w-12 text-xl;
+    }
+  }
+
+  @media (max-width: 320px) {
+    /* Very small screens */
+    .glass-card {
+      @apply p-3 rounded-xl;
+    }
+
+    .btn-premium {
+      @apply px-4 py-2 text-sm;
+    }
+
+    .input-premium {
+      @apply px-3 py-2 text-sm;
+    }
+
+    .stepper-btn {
+      @apply h-10 w-10 text-lg;
+    }
+  }
+}
