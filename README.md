@@ -1,6 +1,7 @@
 # TLAČENKA ROYALE™ 🥩
 
 ## Profesionální Objednávkový Systém
+**Verze 2.0 - s Upstash Redis storage pro produkční persistence**
 
 Copyright © 2025 Michal Bürgermeister. Všechna práva vyhrazena.
 
