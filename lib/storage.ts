@@ -35,9 +35,51 @@ export function saveOrders(orders: any[]): void {
   }
 }
 
+// Get next order number
+export function getNextOrderNumber(): string {
+  const orders = loadOrders()
+  if (orders.length === 0) {
+    return "1"
+  }
+
+  // Find the highest existing order number
+  const highestNumber = orders.reduce((max, order) => {
+    const orderNum = parseInt(order.order_number) || 0
+    return Math.max(max, orderNum)
+  }, 0)
+
+  return (highestNumber + 1).toString()
+}
+
 // Add a new order
 export function addOrder(order: any): void {
   const orders = loadOrders()
   orders.push(order)
   saveOrders(orders)
+}
+
+// Delete an order by ID
+export function deleteOrder(orderId: string): boolean {
+  const orders = loadOrders()
+  const initialLength = orders.length
+  const filteredOrders = orders.filter(order => order.id !== orderId)
+
+  if (filteredOrders.length < initialLength) {
+    saveOrders(filteredOrders)
+    return true
+  }
+  return false
+}
+
+// Update an order
+export function updateOrder(orderId: string, updates: any): boolean {
+  const orders = loadOrders()
+  const orderIndex = orders.findIndex(order => order.id === orderId)
+
+  if (orderIndex !== -1) {
+    orders[orderIndex] = { ...orders[orderIndex], ...updates }
+    saveOrders(orders)
+    return true
+  }
+  return false
 }

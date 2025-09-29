@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { loadOrders, addOrder } from '@/lib/storage'
+import { loadOrders, addOrder, getNextOrderNumber } from '@/lib/storage'
 
 export async function GET(request: NextRequest) {
   try {
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate order number
-    const orderNumber = `TLR-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+    // Generate simple chronological order number
+    const orderNumber = getNextOrderNumber()
 
     const order = {
       id: `order_${Date.now()}`,
