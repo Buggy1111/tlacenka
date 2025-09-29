@@ -314,65 +314,69 @@ export default function AdminPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
-              <h1 className="text-4xl font-serif font-bold text-white mb-2">
+              <h1 className="text-3xl lg:text-4xl font-serif font-bold text-white mb-2">
                 Admin Dashboard
               </h1>
-              <p className="text-white/60">
+              <p className="text-white/60 text-sm">
                 Přehled objednávek systému Tlačenka Royale
               </p>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/10">
               <select
                 value={filterPeriod}
                 onChange={(e) => setFilterPeriod(e.target.value as FilterPeriod)}
-                className="glass-input text-sm"
+                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-400 min-w-20"
               >
-                <option value="today">Dnes</option>
-                <option value="week">Tento týden</option>
-                <option value="month">Tento měsíc</option>
-                <option value="all">Vše</option>
+                <option value="today" className="bg-slate-800">Dnes</option>
+                <option value="week" className="bg-slate-800">Týden</option>
+                <option value="month" className="bg-slate-800">Měsíc</option>
+                <option value="all" className="bg-slate-800">Vše</option>
               </select>
 
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-                className="glass-input text-sm"
+                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-400 min-w-24"
               >
-                <option value="all">Všechny stavy</option>
+                <option value="all" className="bg-slate-800">Všechny</option>
                 {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                  <option key={key} value={key}>{config.label}</option>
+                  <option key={key} value={key} className="bg-slate-800">{config.label}</option>
                 ))}
               </select>
 
               <select
                 value={filterPackageSize}
                 onChange={(e) => setFilterPackageSize(e.target.value as FilterPackageSize)}
-                className="glass-input text-sm"
+                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-400 min-w-16"
               >
-                <option value="all">Všechny velikosti</option>
-                <option value="1kg">1kg balení</option>
-                <option value="2kg">2kg balení</option>
+                <option value="all" className="bg-slate-800">Vše</option>
+                <option value="1kg" className="bg-slate-800">1kg</option>
+                <option value="2kg" className="bg-slate-800">2kg</option>
               </select>
+
+              <div className="w-px h-6 bg-white/20"></div>
 
               <button
                 onClick={handleExportCSV}
-                className="glass-button text-sm"
+                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white hover:bg-white/20 transition-colors flex items-center gap-1"
                 disabled={!orders.length}
+                title="Export CSV"
               >
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">Export CSV</span>
+                <Download className="w-3 h-3" />
+                <span className="hidden md:inline">CSV</span>
               </button>
 
               <button
                 onClick={handleLogout}
-                className="glass-button text-sm bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30"
+                className="bg-red-500/20 border border-red-500/30 rounded px-2 py-1 text-xs text-red-400 hover:bg-red-500/30 transition-colors flex items-center gap-1"
+                title="Odhlásit se"
               >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Odhlásit</span>
+                <LogOut className="w-3 h-3" />
+                <span className="hidden md:inline">Odhlásit</span>
               </button>
             </div>
           </div>
@@ -384,65 +388,109 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8"
           >
-            <div className="glass-card">
-              <div className="flex items-center justify-between">
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Package className="w-5 h-5 text-blue-400" />
+                </div>
                 <div>
-                  <p className="text-white/60 text-sm font-medium">Objednávky</p>
-                  <p className="text-2xl font-bold text-white">{stats.summary.totalOrders}</p>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-wide">Objednávky</p>
+                  <p className="text-xl font-bold text-white">{stats.summary.totalOrders}</p>
                 </div>
-                <div className="p-3 bg-blue-500/20 rounded-xl">
-                  <Package className="w-6 h-6 text-blue-400" />
-                </div>
+              </div>
+              <div className="text-xs text-white/50">
+                {filterPeriod === 'today' ? 'Dnes' :
+                 filterPeriod === 'week' ? 'Tento týden' :
+                 filterPeriod === 'month' ? 'Tento měsíc' : 'Celkem'}
               </div>
             </div>
 
-            <div className="glass-card">
-              <div className="flex items-center justify-between">
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-green-500/20 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                </div>
                 <div>
-                  <p className="text-white/60 text-sm font-medium">Množství</p>
-                  <p className="text-2xl font-bold text-white">{stats.summary.totalQuantity} ks</p>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-wide">Množství</p>
+                  <p className="text-xl font-bold text-white">{stats.summary.totalQuantity}<span className="text-sm text-white/60 ml-1">ks</span></p>
                 </div>
-                <div className="p-3 bg-green-500/20 rounded-xl">
-                  <TrendingUp className="w-6 h-6 text-green-400" />
-                </div>
+              </div>
+              <div className="text-xs text-white/50">
+                {stats.summary.totalWeight} kg celkem
               </div>
             </div>
 
-            <div className="glass-card">
-              <div className="flex items-center justify-between">
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-amber-500/20 rounded-lg">
+                  <DollarSign className="w-5 h-5 text-amber-400" />
+                </div>
                 <div>
-                  <p className="text-white/60 text-sm font-medium">Obrat</p>
-                  <p className="text-2xl font-bold text-white">{stats.summary.totalRevenue.toLocaleString('cs-CZ')} Kč</p>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-wide">Obrat</p>
+                  <p className="text-xl font-bold text-white">{stats.summary.totalRevenue.toLocaleString('cs-CZ')}<span className="text-sm text-white/60 ml-1">Kč</span></p>
                 </div>
-                <div className="p-3 bg-amber-500/20 rounded-xl">
-                  <DollarSign className="w-6 h-6 text-amber-400" />
-                </div>
+              </div>
+              <div className="text-xs text-white/50">
+                Ø {stats.summary.averageOrderValue.toLocaleString('cs-CZ')} Kč/obj.
               </div>
             </div>
 
-            <div className="glass-card">
-              <div className="flex items-center justify-between">
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-purple-500/20 rounded-lg">
+                  <Target className="w-5 h-5 text-purple-400" />
+                </div>
                 <div>
-                  <p className="text-white/60 text-sm font-medium">Marže</p>
-                  <p className="text-2xl font-bold text-white">{stats.summary.totalMargin.toLocaleString('cs-CZ')} Kč</p>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-wide">Marže</p>
+                  <p className="text-xl font-bold text-white">{stats.summary.totalMargin.toLocaleString('cs-CZ')}<span className="text-sm text-white/60 ml-1">Kč</span></p>
                 </div>
-                <div className="p-3 bg-purple-500/20 rounded-xl">
-                  <Target className="w-6 h-6 text-purple-400" />
+              </div>
+              <div className="text-xs text-white/50">
+                {stats.summary.totalRevenue > 0 ? Math.round((stats.summary.totalMargin / stats.summary.totalRevenue) * 100) : 0}% zisk
+              </div>
+            </div>
+
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-orange-500/20 rounded-lg">
+                  <Package className="w-5 h-5 text-orange-400" />
                 </div>
+                <div>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-wide">1kg balení</p>
+                  <p className="text-xl font-bold text-white">{stats.charts.packageSize.find(p => p.name === '1kg')?.quantity || 0}<span className="text-sm text-white/60 ml-1">ks</span></p>
+                </div>
+              </div>
+              <div className="text-xs text-white/50">
+                {stats.charts.packageSize.find(p => p.name === '1kg')?.value.toLocaleString('cs-CZ') || 0} Kč
+              </div>
+            </div>
+
+            <div className="glass-card p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-cyan-500/20 rounded-lg">
+                  <Package className="w-5 h-5 text-cyan-400" />
+                </div>
+                <div>
+                  <p className="text-white/60 text-xs font-medium uppercase tracking-wide">2kg balení</p>
+                  <p className="text-xl font-bold text-white">{stats.charts.packageSize.find(p => p.name === '2kg')?.quantity || 0}<span className="text-sm text-white/60 ml-1">ks</span></p>
+                </div>
+              </div>
+              <div className="text-xs text-white/50">
+                {stats.charts.packageSize.find(p => p.name === '2kg')?.value.toLocaleString('cs-CZ') || 0} Kč
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Charts */}
+        {/* Charts Section */}
         {stats && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8 mb-8"
+            className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8"
           >
             <SimpleCharts
               data={stats.charts.status}
@@ -466,6 +514,61 @@ export default function AdminPage() {
           </motion.div>
         )}
 
+        {/* Recent Orders Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass-card mb-8"
+        >
+          <div className="p-6 border-b border-white/10">
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              Nejnovější objednávky
+            </h3>
+            <p className="text-white/60 text-sm mt-1">Posledních 5 objednávek</p>
+          </div>
+
+          <div className="p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+              {orders.slice(0, 5).map((order, index) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + index * 0.05 }}
+                  className="p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 bg-blue-500/20 rounded flex items-center justify-center">
+                      <span className="text-blue-400 font-bold text-xs">#{order.order_number}</span>
+                    </div>
+                    <span className={`px-2 py-1 rounded text-xs ${STATUS_CONFIG[order.status].color}`}>
+                      {STATUS_CONFIG[order.status].label}
+                    </span>
+                  </div>
+                  <p className="text-white text-sm font-medium mb-1">
+                    {order.customer_name} {order.customer_surname}
+                  </p>
+                  <p className="text-white/60 text-xs mb-2">
+                    {order.quantity}× {order.package_size}
+                  </p>
+                  <p className="text-white font-bold text-sm">
+                    {order.total_price.toLocaleString('cs-CZ')} Kč
+                  </p>
+                </motion.div>
+              ))}
+
+              {orders.length === 0 && (
+                <div className="col-span-full text-center py-8">
+                  <Package className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                  <p className="text-white/60 text-sm">Žádné objednávky</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
         {/* Orders Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -474,10 +577,31 @@ export default function AdminPage() {
           className="glass-card overflow-hidden"
         >
           <div className="p-6 border-b border-white/10">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Objednávky ({orders.length})
-            </h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Objednávky
+                </h3>
+                <p className="text-white/60 text-sm mt-1">
+                  {orders.length} {orders.length === 1 ? 'objednávka' : orders.length < 5 ? 'objednávky' : 'objednávek'} •
+                  {filterPeriod === 'today' ? ' Dnešní' :
+                   filterPeriod === 'week' ? ' Týdenní' :
+                   filterPeriod === 'month' ? ' Měsíční' : ' Všechny'} zobrazení
+                  {filterStatus !== 'all' && ` • ${STATUS_CONFIG[filterStatus as OrderStatus].label}`}
+                  {filterPackageSize !== 'all' && ` • ${filterPackageSize} balení`}
+                </p>
+              </div>
+
+              {orders.length > 0 && (
+                <div className="text-right">
+                  <p className="text-white/80 text-sm">Celkový obrat</p>
+                  <p className="text-white font-bold text-lg">
+                    {orders.reduce((sum, order) => sum + order.total_price, 0).toLocaleString('cs-CZ')} Kč
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">

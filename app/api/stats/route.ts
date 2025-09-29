@@ -1,31 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Import orders from the same in-memory storage
-// Note: This is a simple approach. In production, use a shared database.
-let orders: any[] = []
-
-// Get orders from the orders API endpoint to stay synchronized
-async function getOrders() {
-  try {
-    const response = await fetch('http://localhost:3000/api/orders?period=all&status=all')
-    if (response.ok) {
-      const data = await response.json()
-      return data.orders || []
-    }
-  } catch (error) {
-    console.error('Error fetching orders for stats:', error)
-  }
-  return []
-}
+import { loadOrders } from '@/lib/storage'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('GET /api/stats called')
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || 'all'
 
-    // Get current orders
-    orders = await getOrders()
+    // Get current orders directly from storage
+    const orders = await loadOrders()
 
     // Calculate date range
     const now = new Date()
@@ -105,29 +87,22 @@ export async function GET(request: NextRequest) {
       charts: {
         packageSize: Object.entries(packageStats).map(([size, data]) => ({
           name: size,
-          value: data.revenue,
-          quantity: data.quantity,
-          orders: data.orders,
+          value: (data as { quantity: number; revenue: number; orders: number }).revenue,
+          quantity: (data as { quantity: number; revenue: number; orders: number }).quantity,
+          orders: (data as { quantity: number; revenue: number; orders: number }).orders,
           color: size === '1kg' ? '#F59E0B' : '#D97706',
           icon: '📦'
         })),
         status: Object.entries(statusStats).map(([status, data]) => ({
           name: status,
-          value: data.count,
-          revenue: data.revenue,
+          value: (data as { count: number; revenue: number }).count,
+          revenue: (data as { count: number; revenue: number }).revenue,
           color: getStatusColor(status),
           icon: getStatusIcon(status)
         }))
       },
       period
     }
-
-    console.log('Stats calculated:', {
-      totalOrders,
-      totalRevenue,
-      totalMargin,
-      period
-    })
 
     return NextResponse.json({ stats })
   } catch (error) {

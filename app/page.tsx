@@ -419,15 +419,9 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-center mt-8 text-white/40 text-sm space-y-2"
+          className="text-center mt-8 text-sm"
         >
-          <p>⚠️ Vysoce návykové s cibulí a chlebem</p>
-          <a
-            href="/admin"
-            className="inline-block text-white/30 hover:text-white/60 transition-colors text-xs"
-          >
-            Admin přístup
-          </a>
+          <p className="text-red-400 font-medium">⚠️ Vysoce návykové s cibulí a chlebem</p>
         </motion.div>
       </main>
     </>

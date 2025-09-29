@@ -20,10 +20,8 @@ const products = [
 
 export async function GET() {
   try {
-    console.log('GET /api/products called')
     return NextResponse.json({ products })
   } catch (error) {
-    console.error('Unexpected error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

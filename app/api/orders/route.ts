@@ -3,14 +3,13 @@ import { loadOrders, addOrder, getNextOrderNumber } from '@/lib/storage'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('GET /api/orders called')
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const period = searchParams.get('period')
     const packageSize = searchParams.get('packageSize')
 
-    // Load orders from file storage
-    let orders = loadOrders()
+    // Load orders from storage
+    let orders = await loadOrders()
 
     // Filter by status if provided
     if (status && status !== 'all') {
@@ -59,15 +58,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('POST /api/orders called')
     const body = await request.json()
-    console.log('Request body:', body)
 
     // Validate required fields
     const requiredFields = ['customerName', 'customerSurname', 'packageSize', 'quantity', 'unitPrice', 'totalPrice']
     for (const field of requiredFields) {
       if (!body[field]) {
-        console.log(`Missing field: ${field}`)
         return NextResponse.json(
           { error: `Missing required field: ${field}` },
           { status: 400 }
@@ -76,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate simple chronological order number
-    const orderNumber = getNextOrderNumber()
+    const orderNumber = await getNextOrderNumber()
 
     const order = {
       id: `order_${Date.now()}`,
@@ -93,9 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to persistent storage
-    addOrder(order)
-    console.log('Order created and saved:', order)
-
+    await addOrder(order)
     return NextResponse.json({ order }, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
