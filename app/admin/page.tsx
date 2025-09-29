@@ -82,6 +82,7 @@ type OrderStatus = keyof typeof STATUS_CONFIG
 // Filter types
 type FilterPeriod = 'today' | 'week' | 'month' | 'all'
 type FilterStatus = 'all' | OrderStatus
+type FilterPackageSize = 'all' | '1kg' | '2kg'
 
 export default function AdminPage() {
   const router = useRouter()
@@ -93,6 +94,7 @@ export default function AdminPage() {
 
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('today')
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
+  const [filterPackageSize, setFilterPackageSize] = useState<FilterPackageSize>('all')
   const [chartType, setChartType] = useState<ChartType>(CHART_TYPES.PIE)
 
   // Action states
@@ -112,7 +114,7 @@ export default function AdminPage() {
 
         // Fetch orders and stats in parallel
         const [ordersRes, statsRes] = await Promise.all([
-          fetch(`/api/orders?period=${filterPeriod}&status=${filterStatus}`),
+          fetch(`/api/orders?period=${filterPeriod}&status=${filterStatus}&packageSize=${filterPackageSize}`),
           fetch(`/api/stats?period=${filterPeriod}`)
         ])
 
@@ -144,12 +146,12 @@ export default function AdminPage() {
 
     // Cleanup interval on unmount or dependency change
     return () => clearInterval(interval)
-  }, [filterPeriod, filterStatus, initialLoad])
+  }, [filterPeriod, filterStatus, filterPackageSize, initialLoad])
 
   // Reset initial load when filters change
   useEffect(() => {
     setInitialLoad(true)
-  }, [filterPeriod, filterStatus])
+  }, [filterPeriod, filterStatus, filterPackageSize])
 
   const handleExportCSV = () => {
     if (!orders.length) return
@@ -344,6 +346,16 @@ export default function AdminPage() {
                 {Object.entries(STATUS_CONFIG).map(([key, config]) => (
                   <option key={key} value={key}>{config.label}</option>
                 ))}
+              </select>
+
+              <select
+                value={filterPackageSize}
+                onChange={(e) => setFilterPackageSize(e.target.value as FilterPackageSize)}
+                className="glass-input text-sm"
+              >
+                <option value="all">Všechny velikosti</option>
+                <option value="1kg">1kg balení</option>
+                <option value="2kg">2kg balení</option>
               </select>
 
               <button

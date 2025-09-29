@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const period = searchParams.get('period')
+    const packageSize = searchParams.get('packageSize')
 
     // Load orders from file storage
     let orders = loadOrders()
@@ -14,6 +15,11 @@ export async function GET(request: NextRequest) {
     // Filter by status if provided
     if (status && status !== 'all') {
       orders = orders.filter(order => order.status === status)
+    }
+
+    // Filter by package size if provided
+    if (packageSize && packageSize !== 'all') {
+      orders = orders.filter(order => order.package_size === packageSize)
     }
 
     // Filter by period if provided

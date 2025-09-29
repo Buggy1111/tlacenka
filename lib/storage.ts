@@ -38,17 +38,8 @@ export function saveOrders(orders: any[]): void {
 // Get next order number
 export function getNextOrderNumber(): string {
   const orders = loadOrders()
-  if (orders.length === 0) {
-    return "1"
-  }
-
-  // Find the highest existing order number
-  const highestNumber = orders.reduce((max, order) => {
-    const orderNum = parseInt(order.order_number) || 0
-    return Math.max(max, orderNum)
-  }, 0)
-
-  return (highestNumber + 1).toString()
+  // Simply return the next sequential number based on count
+  return (orders.length + 1).toString()
 }
 
 // Add a new order
@@ -58,6 +49,20 @@ export function addOrder(order: any): void {
   saveOrders(orders)
 }
 
+// Renumber all orders sequentially
+function renumberOrders(orders: any[]): any[] {
+  // Sort by creation date to maintain chronological order
+  const sortedOrders = orders.sort((a, b) =>
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  )
+
+  // Renumber sequentially starting from 1
+  return sortedOrders.map((order, index) => ({
+    ...order,
+    order_number: (index + 1).toString()
+  }))
+}
+
 // Delete an order by ID
 export function deleteOrder(orderId: string): boolean {
   const orders = loadOrders()
@@ -65,7 +70,9 @@ export function deleteOrder(orderId: string): boolean {
   const filteredOrders = orders.filter(order => order.id !== orderId)
 
   if (filteredOrders.length < initialLength) {
-    saveOrders(filteredOrders)
+    // Renumber remaining orders sequentially
+    const renumberedOrders = renumberOrders(filteredOrders)
+    saveOrders(renumberedOrders)
     return true
   }
   return false
