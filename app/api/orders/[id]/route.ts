@@ -6,7 +6,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const success = deleteOrder(params.id)
+    const success = await deleteOrder(params.id)
 
     if (success) {
       return NextResponse.json({ message: 'Order deleted successfully' })
@@ -31,11 +31,11 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const success = updateOrder(params.id, body)
+    const success = await updateOrder(params.id, body)
 
     if (success) {
       // Return updated order
-      const orders = loadOrders()
+      const orders = await loadOrders()
       const updatedOrder = orders.find(order => order.id === params.id)
       return NextResponse.json({ order: updatedOrder })
     } else {
@@ -58,7 +58,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const orders = loadOrders()
+    const orders = await loadOrders()
     const order = orders.find(order => order.id === params.id)
 
     if (order) {

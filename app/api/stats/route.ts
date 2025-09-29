@@ -1,30 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Import orders from the same in-memory storage
-// Note: This is a simple approach. In production, use a shared database.
-let orders: any[] = []
-
-// Get orders from the orders API endpoint to stay synchronized
-async function getOrders() {
-  try {
-    const response = await fetch('http://localhost:3000/api/orders?period=all&status=all')
-    if (response.ok) {
-      const data = await response.json()
-      return data.orders || []
-    }
-  } catch (error) {
-    console.error('Error fetching orders for stats:', error)
-  }
-  return []
-}
+import { loadOrders } from '@/lib/storage'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || 'all'
 
-    // Get current orders
-    orders = await getOrders()
+    // Get current orders directly from storage
+    const orders = await loadOrders()
 
     // Calculate date range
     const now = new Date()

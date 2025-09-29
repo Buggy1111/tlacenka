@@ -8,8 +8,8 @@ export async function GET(request: NextRequest) {
     const period = searchParams.get('period')
     const packageSize = searchParams.get('packageSize')
 
-    // Load orders from file storage
-    let orders = loadOrders()
+    // Load orders from storage
+    let orders = await loadOrders()
 
     // Filter by status if provided
     if (status && status !== 'all') {
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate simple chronological order number
-    const orderNumber = getNextOrderNumber()
+    const orderNumber = await getNextOrderNumber()
 
     const order = {
       id: `order_${Date.now()}`,
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to persistent storage
-    addOrder(order)
+    await addOrder(order)
     return NextResponse.json({ order }, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
