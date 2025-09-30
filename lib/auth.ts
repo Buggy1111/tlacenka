@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import { SignJWT, jwtVerify } from 'jose'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production'
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
@@ -26,24 +26,27 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 // Generate secure JWT token
-export function generateJWT(username: string): string {
-  const payload = {
+export async function generateJWT(username: string): Promise<string> {
+  const secret = new TextEncoder().encode(JWT_SECRET)
+
+  const jwt = await new SignJWT({
     username,
     isAdmin: true,
-    iat: Math.floor(Date.now() / 1000)
-  }
-
-  return jwt.sign(payload, JWT_SECRET, {
-    algorithm: 'HS256',
-    expiresIn: '8h'
   })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('8h')
+    .sign(secret)
+
+  return jwt
 }
 
 // Verify JWT token
-export function verifyJWT(token: string): AdminPayload | null {
+export async function verifyJWT(token: string): Promise<AdminPayload | null> {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as AdminPayload
-    return decoded
+    const secret = new TextEncoder().encode(JWT_SECRET)
+    const { payload } = await jwtVerify(token, secret)
+    return payload as unknown as AdminPayload
   } catch (error) {
     return null
   }
@@ -55,7 +58,7 @@ export async function authenticateAdmin(username: string, password: string): Pro
   return username === ADMIN_USERNAME && password === ADMIN_PASSWORD
 }
 
-export function verifyAdminAuth(request: NextRequest): boolean {
+export async function verifyAdminAuth(request: NextRequest): Promise<boolean> {
   const authCookie = request.cookies.get('admin-auth')
 
   if (!authCookie) {
@@ -63,11 +66,11 @@ export function verifyAdminAuth(request: NextRequest): boolean {
   }
 
   // Verify JWT token
-  const payload = verifyJWT(authCookie.value)
+  const payload = await verifyJWT(authCookie.value)
   return !!(payload && payload.isAdmin)
 }
 
-export function verifyAdminAuthFromCookies(): boolean {
+export async function verifyAdminAuthFromCookies(): Promise<boolean> {
   const cookieStore = cookies()
   const authCookie = cookieStore.get('admin-auth')
 
@@ -76,7 +79,7 @@ export function verifyAdminAuthFromCookies(): boolean {
   }
 
   // Verify JWT token
-  const payload = verifyJWT(authCookie.value)
+  const payload = await verifyJWT(authCookie.value)
   return !!(payload && payload.isAdmin)
 }
 

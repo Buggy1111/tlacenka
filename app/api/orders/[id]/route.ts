@@ -7,7 +7,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   // Verify admin authentication
-  if (!verifyAdminAuth(request)) {
+  if (!(await verifyAdminAuth(request))) {
     return createUnauthorizedResponse()
   }
 
@@ -36,7 +36,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   // Verify admin authentication
-  if (!verifyAdminAuth(request)) {
+  if (!(await verifyAdminAuth(request))) {
     return createUnauthorizedResponse()
   }
 
@@ -69,7 +69,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   // Verify admin authentication
-  if (!verifyAdminAuth(request)) {
+  if (!(await verifyAdminAuth(request))) {
     return createUnauthorizedResponse()
   }
 
