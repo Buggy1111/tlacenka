@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { deleteOrder, updateOrder, loadOrders } from '@/lib/storage'
+import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth'
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Verify admin authentication
+  if (!verifyAdminAuth(request)) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const success = await deleteOrder(params.id)
 
@@ -29,6 +35,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Verify admin authentication
+  if (!verifyAdminAuth(request)) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const body = await request.json()
     const success = await updateOrder(params.id, body)
@@ -57,6 +68,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Verify admin authentication
+  if (!verifyAdminAuth(request)) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const orders = await loadOrders()
     const order = orders.find(order => order.id === params.id)
