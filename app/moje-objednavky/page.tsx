@@ -152,7 +152,7 @@ export default function MyOrdersPage() {
         }}
       />
 
-      <main className="min-h-screen px-3 sm:px-4 py-4 sm:py-8 safe-top safe-bottom">
+      <main className="min-h-screen px-4 py-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -182,7 +182,7 @@ export default function MyOrdersPage() {
                 Vyhledat objednávky
               </h2>
 
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 <div>
                   <label htmlFor="firstName" className="text-white/80 text-sm font-medium mb-2 block">
                     Jméno
@@ -243,7 +243,7 @@ export default function MyOrdersPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="max-w-2xl mx-auto"
+              className="w-full max-w-2xl mx-auto px-2"
             >
               {orders.length === 0 ? (
                 <div className="glass-card text-center">
