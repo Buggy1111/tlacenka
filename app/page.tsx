@@ -11,8 +11,8 @@ const PACKAGES = {
   small: {
     id: 'small',
     weight: 1,
-    price: 90,
-    bulkPrice: 88, // Sleva při 2+ kusech
+    price: 175,
+    bulkPrice: 175, // Žádná sleva
     label: '1 kg',
     description: 'Ideální porce pro 2-3 osoby',
     emoji: '📦'
@@ -20,8 +20,8 @@ const PACKAGES = {
   large: {
     id: 'large',
     weight: 2,
-    price: 175,
-    bulkPrice: 175, // Žádná sleva pro 2kg
+    price: 350,
+    bulkPrice: 350, // Žádná sleva
     label: '2 kg',
     description: 'Rodinné balení pro 4-6 osob',
     emoji: '📦📦'
