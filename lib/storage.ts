@@ -37,13 +37,15 @@ export async function getNextOrderNumber(): Promise<string> {
 }
 
 // Add a new order to Firebase
-export async function addOrder(order: any): Promise<void> {
+export async function addOrder(order: any): Promise<string | null> {
   try {
     const ordersRef = collection(db, COLLECTION_NAME)
     const { id, ...orderData } = order // Remove the id field, Firestore will generate it
-    await addDoc(ordersRef, orderData)
+    const docRef = await addDoc(ordersRef, orderData)
+    return docRef.id // Return the Firebase-generated ID
   } catch (error) {
     console.error('Error adding order to Firebase:', error)
+    return null
   }
 }
 

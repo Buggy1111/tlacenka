@@ -50,3 +50,19 @@ ${emoji} <b>${order.package_size} tlačenka</b>
 
 <a href="https://tlacenka-cz.vercel.app/admin">📊 Zobrazit v adminu</a>`
 }
+
+export function formatCancellationNotification(order: any): string {
+  const emoji = order.package_size === '1kg' ? '📦' : '📦📦'
+
+  return `❌ <b>Objednávka stornována!</b>
+
+👤 <b>${order.customer_name} ${order.customer_surname}</b>
+${emoji} <b>${order.package_size} tlačenka</b>
+💰 <b>${order.total_price} Kč</b>
+🔢 Objednávka č. <b>${order.order_number}</b>
+
+⏰ Stornováno: ${new Date().toLocaleString('cs-CZ')}
+📅 Původně vytvořeno: ${new Date(order.created_at).toLocaleString('cs-CZ')}
+
+<a href="https://tlacenka-cz.vercel.app/admin">📊 Zobrazit v adminu</a>`
+}

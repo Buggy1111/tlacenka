@@ -100,18 +100,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to persistent storage
-    await addOrder(order)
+    const firebaseId = await addOrder(order)
+
+    if (!firebaseId) {
+      return NextResponse.json(
+        { error: 'Failed to save order' },
+        { status: 500 }
+      )
+    }
+
+    // Update order with correct Firebase ID
+    const finalOrder = { ...order, id: firebaseId }
 
     // Send Telegram notification
     try {
-      const notification = formatOrderNotification(order)
+      const notification = formatOrderNotification(finalOrder)
       await sendTelegramNotification(notification)
     } catch (error) {
       console.error('Failed to send Telegram notification:', error)
       // Don't fail the order if notification fails
     }
 
-    return NextResponse.json({ order }, { status: 201 })
+    return NextResponse.json({ order: finalOrder }, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
     return NextResponse.json(

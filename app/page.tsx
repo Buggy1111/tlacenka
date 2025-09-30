@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Minus, Plus, ShoppingBag, Clock, Package, X, Check } from 'lucide-react'
+import { Minus, Plus, ShoppingBag, Clock, Package, X, Check, Search } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
+import Link from 'next/link'
 
 // Package options - 1kg and 2kg
 const PACKAGES = {
@@ -248,6 +249,14 @@ export default function HomePage() {
             Tlačenka Royale
           </h1>
           <p className="text-white/60 text-base xs:text-lg">Premium domácí výroba • Tradiční recept</p>
+
+          <Link
+            href="/moje-objednavky"
+            className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white/80 hover:text-white hover:bg-white/20 transition-colors text-sm"
+          >
+            <Search className="w-4 h-4" />
+            Moje objednávky & storno
+          </Link>
         </motion.div>
 
         {/* Order Form Card */}

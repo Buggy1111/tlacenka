@@ -28,7 +28,10 @@ export default function AdminLoginPage() {
 
       if (response.ok) {
         toast.success('Přihlášení úspěšné!')
-        router.push('/admin')
+        // Short delay to ensure cookie is set, then hard refresh
+        setTimeout(() => {
+          window.location.href = '/admin'
+        }, 1000)
       } else {
         toast.error('Nesprávné přihlašovací údaje')
       }
