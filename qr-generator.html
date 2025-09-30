@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tlačenka Royale QR Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #831843 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e1b4b;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 800;
+        }
+
+        .qr-wrapper {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-weight: 900;
+            font-size: 14px;
+            color: #831843;
+            white-space: nowrap;
+        }
+
+        .taglines {
+            margin-bottom: 30px;
+        }
+
+        .tagline {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .tagline:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .tagline.selected {
+            background: linear-gradient(135deg, #831843 0%, #1e1b4b 100%);
+            transform: scale(1.05);
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .selected-text {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            font-style: italic;
+            color: #4b5563;
+        }
+
+        .crown {
+            font-size: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="crown">👑</div>
+        <h1>Tlačenka Royale</h1>
+        <h2 style="text-align: center; color: #6b7280; font-size: 1.2em; margin-bottom: 30px;">QR Kód Generator</h2>
+
+        <div class="taglines">
+            <div class="tagline" onclick="selectTagline(1)">
+                „Objednej si tlačenku jako hacker.<br>Stačí naskenovat QR a jsi v systému."
+            </div>
+            <div class="tagline" onclick="selectTagline(2)">
+                „Papírky už jsou minulost.<br>Tady se objednává budoucnost tlačenky!"
+            </div>
+            <div class="tagline" onclick="selectTagline(3)">
+                „Pozor! Tlačenka 2.0.<br>Stačí QR → klik → a už jede k tobě."
+            </div>
+            <div class="tagline selected" onclick="selectTagline(4)">
+                „Neboj, není to phishing.<br>Je to jen tlačenka 😅"
+            </div>
+            <div class="tagline" onclick="selectTagline(5)">
+                „Exkluzivní přístup k nejžádanější tlačence ve firmě.<br>Scan → vyber kusy → hotovo."
+            </div>
+        </div>
+
+        <div class="selected-text" id="selectedText">
+            Vybraný text: „Neboj, není to phishing. Je to jen tlačenka 😅"
+        </div>
+
+        <div class="qr-wrapper">
+            <div id="qrcode"></div>
+            <div class="logo-overlay">Tlačenka Royale</div>
+        </div>
+
+        <button class="download-btn" onclick="downloadQR()">
+            📥 Stáhnout QR kód
+        </button>
+    </div>
+
+    <script>
+        let selectedTaglineText = "„Neboj, není to phishing.<br>Je to jen tlačenka 😅"";
+        let qr = null;
+
+        // Generate QR code
+        function generateQR() {
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+
+            qr = new QRCode(container, {
+                text: "https://tlacenka-cz.vercel.app/",
+                width: 300,
+                height: 300,
+                colorDark: "#1e1b4b",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Re-add logo overlay
+            setTimeout(() => {
+                const overlay = document.createElement('div');
+                overlay.className = 'logo-overlay';
+                overlay.textContent = 'Tlačenka Royale';
+                container.appendChild(overlay);
+            }, 100);
+        }
+
+        function selectTagline(num) {
+            // Remove selected class from all
+            document.querySelectorAll('.tagline').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selected class to clicked
+            document.querySelectorAll('.tagline')[num-1].classList.add('selected');
+
+            // Update selected text
+            const taglines = [
+                "„Objednej si tlačenku jako hacker.<br>Stačí naskenovat QR a jsi v systému."",
+                "„Papírky už jsou minulost.<br>Tady se objednává budoucnost tlačenky!"",
+                "„Pozor! Tlačenka 2.0.<br>Stačí QR → klik → a už jede k tobě."",
+                "„Neboj, není to phishing.<br>Je to jen tlačenka 😅"",
+                "„Exkluzivní přístup k nejžádanější tlačence ve firmě.<br>Scan → vyber kusy → hotovo.""
+            ];
+
+            selectedTaglineText = taglines[num-1];
+            document.getElementById('selectedText').innerHTML = `Vybraný text: ${selectedTaglineText}`;
+        }
+
+        function downloadQR() {
+            // Get the canvas element from QR code
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+
+            // Create a new canvas for the complete image
+            const finalCanvas = document.createElement('canvas');
+            const ctx = finalCanvas.getContext('2d');
+
+            // Set size
+            finalCanvas.width = 400;
+            finalCanvas.height = 500;
+
+            // White background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+            // Draw QR code
+            ctx.drawImage(canvas, 50, 100, 300, 300);
+
+            // Draw "Tlačenka Royale" in center
+            ctx.fillStyle = 'white';
+            ctx.fillRect(150, 230, 100, 40);
+            ctx.fillStyle = '#831843';
+            ctx.font = 'bold 14px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('Tlačenka', 200, 245);
+            ctx.fillText('Royale', 200, 260);
+
+            // Draw selected tagline
+            ctx.fillStyle = '#1e1b4b';
+            ctx.font = '14px Inter';
+            ctx.textAlign = 'center';
+
+            // Split and draw text lines
+            const textLines = selectedTaglineText.replace(/<br>/g, '\n').replace(/„|"/g, '').split('\n');
+            textLines.forEach((line, i) => {
+                ctx.fillText(line, 200, 430 + (i * 20));
+            });
+
+            // Draw title at top
+            ctx.fillStyle = '#831843';
+            ctx.font = 'bold 32px Inter';
+            ctx.fillText('👑 Tlačenka Royale', 200, 50);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = 'tlacenka-royale-qr.png';
+            link.href = finalCanvas.toDataURL();
+            link.click();
+        }
+
+        // Generate QR on load
+        generateQR();
+    </script>
+</body>
+</html>
