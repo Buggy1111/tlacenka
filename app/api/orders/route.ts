@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { loadOrders, addOrder, getNextOrderNumber } from '@/lib/storage'
+import { sendTelegramNotification, formatOrderNotification } from '@/lib/telegram'
 
 export async function GET(request: NextRequest) {
   try {
@@ -90,6 +91,16 @@ export async function POST(request: NextRequest) {
 
     // Add to persistent storage
     await addOrder(order)
+
+    // Send Telegram notification
+    try {
+      const notification = formatOrderNotification(order)
+      await sendTelegramNotification(notification)
+    } catch (error) {
+      console.error('Failed to send Telegram notification:', error)
+      // Don't fail the order if notification fails
+    }
+
     return NextResponse.json({ order }, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
