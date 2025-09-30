@@ -9,8 +9,11 @@ yarn-error.log*
 out/
 build/
 
-# Environment variables
+# Environment variables - SECURITY CRITICAL
+.env
+.env.*
 .env.local
+.env.production
 .env.production.local
 .env.development.local
 
