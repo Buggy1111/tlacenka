@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { loadOrders } from '@/lib/storage'
+import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
+  // Verify admin authentication
+  if (!verifyAdminAuth(request)) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || 'all'

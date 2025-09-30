@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { loadOrders, addOrder, getNextOrderNumber } from '@/lib/storage'
 import { sendTelegramNotification, formatOrderNotification } from '@/lib/telegram'
+import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth'
+import { validateOrderInput } from '@/lib/validation'
 
 export async function GET(request: NextRequest) {
+  // Verify admin authentication
+  if (!verifyAdminAuth(request)) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
@@ -61,30 +68,33 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validate required fields
-    const requiredFields = ['customerName', 'customerSurname', 'packageSize', 'quantity', 'unitPrice', 'totalPrice']
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `Missing required field: ${field}` },
-          { status: 400 }
-        )
-      }
+    // Validate and sanitize input
+    const validation = validateOrderInput(body)
+    if (!validation.isValid) {
+      return NextResponse.json(
+        {
+          error: 'Invalid input data',
+          details: validation.errors
+        },
+        { status: 400 }
+      )
     }
+
+    const sanitizedData = validation.sanitizedData!
 
     // Generate simple chronological order number
     const orderNumber = await getNextOrderNumber()
 
     const order = {
       id: `order_${Date.now()}`,
-      customer_name: body.customerName,
-      customer_surname: body.customerSurname,
-      package_size: body.packageSize,
-      quantity: body.quantity,
-      unit_price: body.unitPrice,
-      total_price: body.totalPrice,
+      customer_name: sanitizedData.customerName,
+      customer_surname: sanitizedData.customerSurname,
+      package_size: sanitizedData.packageSize,
+      quantity: sanitizedData.quantity,
+      unit_price: sanitizedData.unitPrice,
+      total_price: sanitizedData.totalPrice,
       status: 'pending',
-      notes: body.notes || null,
+      notes: sanitizedData.notes || null,
       created_at: new Date().toISOString(),
       order_number: orderNumber
     }

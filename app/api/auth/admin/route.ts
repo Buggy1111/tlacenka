@@ -1,25 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-
-// Simple admin credentials - v produkci by bylo hašované
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin'
+import { validateAuthInput } from '@/lib/validation'
+import { authenticateAdmin, generateJWT } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json()
+    const body = await request.json()
 
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      // Vytvoř simple auth token
-      const authToken = 'admin-authenticated-' + Date.now()
+    // Validate and sanitize input
+    const validation = validateAuthInput(body)
+    if (!validation.isValid) {
+      return NextResponse.json(
+        {
+          error: 'Invalid input data',
+          details: validation.errors
+        },
+        { status: 400 }
+      )
+    }
 
-      // Nastav cookie
+    const { username, password } = validation.sanitizedData!
+
+    // Authenticate using the stronger auth system
+    const isAuthenticated = await authenticateAdmin(username, password)
+
+    if (isAuthenticated) {
+      // Generate secure JWT token
+      const authToken = generateJWT(username)
+
+      // Set secure cookie
       const response = NextResponse.json({ success: true })
       response.cookies.set('admin-auth', authToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 60 * 60 * 8 // 8 hodin
+        maxAge: 60 * 60 * 8, // 8 hours
+        path: '/'
       })
 
       return response

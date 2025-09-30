@@ -1,5 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production'
+
+function verifyJWT(token: string): boolean {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any
+    return !!(decoded && decoded.isAdmin)
+  } catch (error) {
+    return false
+  }
+}
 
 export function middleware(request: NextRequest) {
   // Ochrana admin stránek
@@ -9,10 +21,10 @@ export function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    // Zkontroluj auth cookie
+    // Zkontroluj JWT auth cookie
     const authCookie = request.cookies.get('admin-auth')
 
-    if (!authCookie || !authCookie.value.startsWith('admin-authenticated-')) {
+    if (!authCookie || !verifyJWT(authCookie.value)) {
       // Přesměruj na login
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
