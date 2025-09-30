@@ -38,24 +38,24 @@ export default function MyOrdersPage() {
     setHasSearched(true)
 
     try {
-      // Fetch all orders and filter on client side for simplicity
-      const response = await fetch('/api/orders')
+      // Search orders by customer name
+      const response = await fetch('/api/orders/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim()
+        })
+      })
 
       if (!response.ok) {
         throw new Error('Chyba při načítání objednávek')
       }
 
       const data = await response.json()
-
-      // Filter by customer name (case insensitive)
-      const customerOrders = data.orders.filter((order: Order) =>
-        order.customer_name.toLowerCase().trim() === firstName.toLowerCase().trim() &&
-        order.customer_surname.toLowerCase().trim() === lastName.toLowerCase().trim()
-      )
-
-      setOrders(customerOrders.sort((a: Order, b: Order) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      ))
+      setOrders(data.orders || [])
 
     } catch (error) {
       console.error('Error fetching orders:', error)
