@@ -12,7 +12,7 @@ async function verifyJWT(token: string): Promise<boolean> {
     console.log('Middleware: Token decoded:', { username: payload.username, isAdmin: payload.isAdmin })
     return !!(payload && payload.isAdmin)
   } catch (error) {
-    console.log('Middleware: JWT verification failed:', error.message)
+    console.log('Middleware: JWT verification failed:', error instanceof Error ? error.message : String(error))
     return false
   }
 }
