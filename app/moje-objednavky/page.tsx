@@ -25,6 +25,8 @@ export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [orderToCancel, setOrderToCancel] = useState<Order | null>(null)
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,13 +75,18 @@ export default function MyOrdersPage() {
     return diffMinutes <= 15
   }
 
-  const handleCancelOrder = async (orderId: string, orderNumber: string) => {
-    if (!confirm(`Opravdu chcete stornovat objednávku č. ${orderNumber}?`)) {
-      return
-    }
+  const handleCancelOrder = (order: Order) => {
+    setOrderToCancel(order)
+    setShowCancelModal(true)
+  }
+
+  const confirmCancelOrder = async () => {
+    if (!orderToCancel) return
+
+    setShowCancelModal(false)
 
     try {
-      const response = await fetch(`/api/orders/${orderId}/cancel`, {
+      const response = await fetch(`/api/orders/${orderToCancel.id}/cancel`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -92,16 +99,18 @@ export default function MyOrdersPage() {
 
       // Update local state
       setOrders(orders.map(order =>
-        order.id === orderId
+        order.id === orderToCancel.id
           ? { ...order, status: 'cancelled' }
           : order
       ))
 
-      toast.success(`Objednávka č. ${orderNumber} byla stornována`)
+      toast.success(`Objednávka č. ${orderToCancel.order_number} byla stornována`)
 
     } catch (error) {
       console.error('Error cancelling order:', error)
       toast.error('Nepodařilo se stornovat objednávku')
+    } finally {
+      setOrderToCancel(null)
     }
   }
 
@@ -140,6 +149,100 @@ export default function MyOrdersPage() {
 
   return (
     <>
+      {/* Cancel Confirmation Modal */}
+      <AnimatePresence>
+        {showCancelModal && orderToCancel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowCancelModal(false)}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-sm sm:max-w-md mx-auto"
+            >
+              <div className="glass-card">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-serif font-bold text-white">
+                    Stornovat objednávku
+                  </h2>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setShowCancelModal(false)}
+                    className="p-2 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.button>
+                </div>
+
+                {/* Order Summary */}
+                <div className="space-y-4 mb-8">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-white/80">Zákazník:</span>
+                      <span className="text-white font-semibold">{orderToCancel.customer_name} {orderToCancel.customer_surname}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-white/80">Objednávka:</span>
+                      <span className="text-white">č. {orderToCancel.order_number}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-white/80">Balení:</span>
+                      <span className="text-white">{orderToCancel.quantity}× {orderToCancel.package_size}</span>
+                    </div>
+                    <div className="h-px bg-white/10 my-3"></div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/80 font-medium">Celková cena:</span>
+                      <span className="text-yellow-400 text-xl font-bold">{orderToCancel.total_price} Kč</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-red-600/10 border border-red-600/20">
+                    <div className="flex items-center gap-2 text-red-300 text-sm">
+                      <Clock className="w-4 h-4" />
+                      <span>Opravdu chcete stornovat tuto objednávku?</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="grid grid-cols-2 gap-3">
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowCancelModal(false)}
+                    className="px-6 py-3 rounded-2xl bg-white/10 border border-white/20 text-white font-medium hover:bg-white/20 transition-colors"
+                  >
+                    Zpět
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={confirmCancelOrder}
+                    className="px-6 py-3 rounded-2xl bg-red-500/20 border border-red-500/30 text-red-300 font-medium hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Stornovat</span>
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Toaster
         position="top-center"
         toastOptions={{
@@ -295,7 +398,7 @@ export default function MyOrdersPage() {
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={() => handleCancelOrder(order.id, order.order_number)}
+                          onClick={() => handleCancelOrder(order)}
                           className="w-full px-4 py-2 bg-red-500/20 border border-red-500/30 text-red-300 rounded-xl font-medium hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2"
                         >
                           <X className="w-4 h-4" />
