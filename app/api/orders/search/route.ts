@@ -4,11 +4,11 @@ import { loadOrders } from '@/lib/storage'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { firstName, lastName } = body
+    const { firstName, lastName, pin } = body
 
-    if (!firstName || !lastName) {
+    if (!firstName || !lastName || !pin) {
       return NextResponse.json(
-        { error: 'First name and last name are required' },
+        { error: 'First name, last name and PIN are required' },
         { status: 400 }
       )
     }
@@ -16,10 +16,11 @@ export async function POST(request: NextRequest) {
     // Load all orders
     const allOrders = await loadOrders()
 
-    // Filter by customer name (case insensitive)
+    // Filter by customer name and PIN (case insensitive for names, exact for PIN)
     const customerOrders = allOrders.filter((order: any) =>
       order.customer_name.toLowerCase().trim() === firstName.toLowerCase().trim() &&
-      order.customer_surname.toLowerCase().trim() === lastName.toLowerCase().trim()
+      order.customer_surname.toLowerCase().trim() === lastName.toLowerCase().trim() &&
+      order.pin === pin.toString().trim()
     )
 
     // Sort by creation date (newest first)

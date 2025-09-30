@@ -85,6 +85,9 @@ export async function POST(request: NextRequest) {
     // Generate simple chronological order number
     const orderNumber = await getNextOrderNumber()
 
+    // Generate 4-digit PIN for security
+    const pin = Math.floor(1000 + Math.random() * 9000).toString()
+
     const order = {
       id: `order_${Date.now()}`,
       customer_name: sanitizedData.customerName,
@@ -96,7 +99,8 @@ export async function POST(request: NextRequest) {
       status: 'pending',
       notes: sanitizedData.notes || null,
       created_at: new Date().toISOString(),
-      order_number: orderNumber
+      order_number: orderNumber,
+      pin: pin
     }
 
     // Add to persistent storage

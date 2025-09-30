@@ -35,6 +35,8 @@ export default function HomePage() {
   const [lastName, setLastName] = useState('')
   const [isOrdering, setIsOrdering] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showPinModal, setShowPinModal] = useState(false)
+  const [orderData, setOrderData] = useState<any>(null)
 
   const currentPackage = PACKAGES[selectedPackage]
   const totalWeight = currentPackage.weight * quantity
@@ -88,16 +90,16 @@ export default function HomePage() {
 
       const { order } = await response.json()
 
-      toast.success(
-        <div>
-          <strong>Objednávka přijata! 🎉</strong>
-          <br />
-          Číslo: {order.order_number}
-          <br />
-          {firstName} {lastName}: {quantity}× {currentPackage.label} ({totalWeight} kg) za {totalPrice} Kč
-        </div>,
-        { duration: 5000 }
-      )
+      // Store order data and show PIN modal
+      setOrderData({
+        ...order,
+        customerName: firstName,
+        customerSurname: lastName,
+        packageLabel: currentPackage.label,
+        totalWeight: totalWeight,
+        totalPrice: totalPrice
+      })
+      setShowPinModal(true)
 
       // Reset form
       setQuantity(1)
@@ -220,6 +222,112 @@ export default function HomePage() {
                     <span>Potvrdit</span>
                   </motion.button>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PIN Success Modal */}
+      <AnimatePresence>
+        {showPinModal && orderData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-sm xs:max-w-md mx-auto"
+            >
+              <div className="glass-card text-center">
+                {/* Success Icon */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="w-16 h-16 mx-auto mb-4 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-green-400 text-2xl"
+                  >
+                    🎉
+                  </motion.div>
+                </motion.div>
+
+                {/* Header */}
+                <h2 className="text-2xl font-serif font-bold text-white mb-2">
+                  Objednávka přijata!
+                </h2>
+                <p className="text-white/60 text-sm mb-6">
+                  Číslo objednávky: {orderData.order_number}
+                </p>
+
+                {/* PIN Display */}
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-600/20 to-amber-600/10 border border-amber-600/30 mb-6">
+                  <div className="text-amber-400 text-sm font-medium mb-2">🔒 Váš PIN kód</div>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-4xl font-bold text-white tracking-wider mb-2"
+                    style={{ fontFamily: 'monospace' }}
+                  >
+                    {orderData.pin}
+                  </motion.div>
+                  <p className="text-amber-300 text-xs">
+                    Zapište si nebo zapamatujte tento kód pro kontrolu objednávky
+                  </p>
+                </div>
+
+                {/* Order Summary */}
+                <div className="text-left p-4 rounded-2xl bg-white/5 border border-white/10 mb-6">
+                  <div className="text-white/60 text-sm font-medium mb-3">Souhrn objednávky:</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Zákazník:</span>
+                      <span className="text-white">{orderData.customerName} {orderData.customerSurname}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Balení:</span>
+                      <span className="text-white">{quantity}× {orderData.packageLabel}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Celková váha:</span>
+                      <span className="text-white">{orderData.totalWeight} kg</span>
+                    </div>
+                    <div className="h-px bg-white/10 my-2"></div>
+                    <div className="flex justify-between">
+                      <span className="text-white/80 font-medium">Celková cena:</span>
+                      <span className="text-yellow-400 font-bold">{orderData.totalPrice} Kč</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Close Button */}
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowPinModal(false)}
+                  className="w-full btn-premium flex items-center justify-center gap-2"
+                >
+                  <Check className="w-5 h-5" />
+                  <span>Rozumím</span>
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>

@@ -7,6 +7,17 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Parse request body to get PIN
+    const body = await request.json()
+    const { pin } = body
+
+    if (!pin) {
+      return NextResponse.json(
+        { error: 'PIN is required for order cancellation' },
+        { status: 400 }
+      )
+    }
+
     // Load orders to get the current order
     const orders = await loadOrders()
     const order = orders.find(order => order.id === params.id)
@@ -15,6 +26,14 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
+      )
+    }
+
+    // Verify PIN
+    if (order.pin !== pin.toString().trim()) {
+      return NextResponse.json(
+        { error: 'Invalid PIN' },
+        { status: 403 }
       )
     }
 

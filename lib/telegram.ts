@@ -45,6 +45,7 @@ export function formatOrderNotification(order: any): string {
 ${emoji} <b>${order.package_size} tlačenka</b>
 💰 <b>${order.total_price} Kč</b>
 🔢 Objednávka č. <b>${order.order_number}</b>
+🔒 PIN: <code>${order.pin}</code>
 
 🕐 ${new Date(order.created_at).toLocaleString('cs-CZ')}
 
@@ -60,6 +61,7 @@ export function formatCancellationNotification(order: any): string {
 ${emoji} <b>${order.package_size} tlačenka</b>
 💰 <b>${order.total_price} Kč</b>
 🔢 Objednávka č. <b>${order.order_number}</b>
+🔒 PIN: <code>${order.pin}</code>
 
 ⏰ Stornováno: ${new Date().toLocaleString('cs-CZ')}
 📅 Původně vytvořeno: ${new Date(order.created_at).toLocaleString('cs-CZ')}

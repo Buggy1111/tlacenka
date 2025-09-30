@@ -22,6 +22,7 @@ interface Order {
 export default function MyOrdersPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [pin, setPin] = useState('')
   const [orders, setOrders] = useState<Order[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
@@ -31,8 +32,8 @@ export default function MyOrdersPage() {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!firstName.trim() || !lastName.trim()) {
-      toast.error('Zadejte prosím jméno i příjmení')
+    if (!firstName.trim() || !lastName.trim() || !pin.trim()) {
+      toast.error('Zadejte prosím jméno, příjmení a PIN kód')
       return
     }
 
@@ -48,7 +49,8 @@ export default function MyOrdersPage() {
         },
         body: JSON.stringify({
           firstName: firstName.trim(),
-          lastName: lastName.trim()
+          lastName: lastName.trim(),
+          pin: pin.trim()
         })
       })
 
@@ -91,6 +93,9 @@ export default function MyOrdersPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          pin: pin.trim()
+        })
       })
 
       if (!response.ok) {
@@ -318,6 +323,25 @@ export default function MyOrdersPage() {
                     required
                   />
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="pin" className="text-white/80 text-sm font-medium mb-2 block">
+                  🔒 PIN kód z objednávky
+                </label>
+                <input
+                  id="pin"
+                  type="text"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  placeholder="4-místný PIN"
+                  maxLength={4}
+                  className="input-premium"
+                  required
+                />
+                <p className="text-white/50 text-xs mt-1">
+                  PIN kód jste dostali při potvrzení objednávky
+                </p>
               </div>
             </div>
 
