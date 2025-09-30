@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secure-jwt-secret-key-change-in-production-very-long-and-random-123456789'
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production'
 const secret = new TextEncoder().encode(JWT_SECRET)
 
 async function verifyJWT(token: string): Promise<boolean> {

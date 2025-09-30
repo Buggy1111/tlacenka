@@ -4,7 +4,7 @@ import { verifyAdminAuth, createUnauthorizedResponse } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   // Verify admin authentication
-  if (!verifyAdminAuth(request)) {
+  if (!(await verifyAdminAuth(request))) {
     return createUnauthorizedResponse()
   }
 

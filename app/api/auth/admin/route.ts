@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (isAuthenticated) {
       // Generate secure JWT token
-      const authToken = generateJWT(username)
+      const authToken = await generateJWT(username)
 
       // Set secure cookie
       const response = NextResponse.json({ success: true })
