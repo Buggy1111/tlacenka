@@ -116,18 +116,22 @@ export default function MyOrdersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'text-yellow-400 bg-yellow-400/10'
-      case 'confirmed': return 'text-green-400 bg-green-400/10'
-      case 'cancelled': return 'text-red-400 bg-red-400/10'
-      default: return 'text-gray-400 bg-gray-400/10'
+      case 'pending': return 'text-blue-400 bg-blue-400/10 border border-blue-400/20'
+      case 'confirmed': return 'text-orange-400 bg-orange-400/10 border border-orange-400/20'
+      case 'processing': return 'text-yellow-400 bg-yellow-400/10 border border-yellow-400/20'
+      case 'completed': return 'text-green-400 bg-green-400/10 border border-green-400/20'
+      case 'cancelled': return 'text-red-400 bg-red-400/10 border border-red-400/20'
+      default: return 'text-gray-400 bg-gray-400/10 border border-gray-400/20'
     }
   }
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending': return 'Čeká na potvrzení'
-      case 'confirmed': return 'Potvrzeno'
-      case 'cancelled': return 'Stornováno'
+      case 'pending': return 'Čekající'
+      case 'confirmed': return 'Potvrzená'
+      case 'processing': return 'Zpracovává se'
+      case 'completed': return 'Dokončená'
+      case 'cancelled': return 'Zrušená'
       default: return status
     }
   }
